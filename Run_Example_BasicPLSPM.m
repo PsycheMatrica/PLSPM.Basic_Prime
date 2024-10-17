@@ -47,6 +47,7 @@ INI.iter
 INI.W
 INI.C
 INI.B
+INI.CVscore
 TABLE
 TABLE.W
 TABLE.C

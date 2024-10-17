@@ -27,6 +27,7 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,N_Boot,Max_ite
 %     .W: a J by P matrix of weight estimates                             %
 %     .C: a P by J matrix of loading estimates                            %
 %     .B: a P by P matrix of path coefficient estimates                   %
+%     .CVscore: an N by P matrix of component scores                      % 
 %  TABLE: Structure array containing tables of parameter estimates, their %
 %         SEs, 95% CIs,and other statistics                               %
 %     .W: Table for weight estimates                                      %
@@ -38,7 +39,7 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,N_Boot,Max_ite
 %     .B_Boot: Matrix of bootstrapped path coefficient estimates          %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Note:                                                                   %
-% 1. This function employs the cost function unifiying Mode A and Mode B  %
+% 1. This function employs the cost function unifying Mode A and Mode B   %
 %    of the PLS algorithm as follows:                                     %
 %    "f = alpha_j*SS(Z - FW') + beta_j*SS(F - ZW), where F = Gamma*B"     %
 %      alpha_j + beta_j = 1                                               %
@@ -139,12 +140,13 @@ end
 %WT;
 %Path;
 %B;
-[est_W,est_C,est_B,it,Converge] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,Max_iter,Min_limit,N,J,P);
+[est_W,est_C,est_B,it,Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,Max_iter,Min_limit,N,J,P);
 INI.iter = it;
 INI.Converge=Converge;
 INI.W = est_W;
 INI.C = est_C;
 INI.B = est_B;
+INI.CVscore = Gamma;
 
 if N_Boot<100
    TABLE.W=[est_W(W0),NaN(Nw,5)];

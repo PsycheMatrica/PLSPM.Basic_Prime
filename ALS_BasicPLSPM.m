@@ -1,4 +1,4 @@
-function [WT,LD,Path,it,Flag_Converge] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,itmax,ceps,N,J,P)
+function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
