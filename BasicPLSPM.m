@@ -1,4 +1,4 @@
-function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,N_Boot,Max_iter,Min_limit,Flag_Parallel)
+function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BasicGSCA() - MATLAB function to perform a basic version of Partial     %
 %               Least Sqaures Path Modeling  (PLSPM).                     %
@@ -12,6 +12,8 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,N_Boot,Max_ite
 %              variable (1 = mode A, 2 = mode B)                          %
 %   scheme = an integer indicating the scheme for updating inner weights  % 
 %              (1 = centroid, 2 = factorial, 3 = path weighting)          %
+%   ind_sign = a vector of length P representing sign-fixing indicator of %
+%              each latent variable                                       %
 %   N_Boot = Integer representing the number of bootstrap samples for     %
 %            calculating standard errors (SE) and 95% confidence          %
 %            intervals (CI)                                               %
@@ -140,13 +142,13 @@ end
 %WT;
 %Path;
 %B;
-[est_W,est_C,est_B,it,Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,Max_iter,Min_limit,N,J,P);
+[est_W,est_C,est_B,it,Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
 INI.iter = it;
 INI.Converge=Converge;
 INI.W = est_W;
 INI.C = est_C;
 INI.B = est_B;
-INI.CVscore = Gamma;
+INI.CVscore = Gamma*sqrt(N);
 
 if N_Boot<100
    TABLE.W=[est_W(W0),NaN(Nw,5)];
@@ -162,7 +164,7 @@ else
    if Flag_Parallel
        parfor b=1:N_Boot
            [Z_ib,~]=GC_Boot(z);
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,Max_iter,Min_limit,N,J,P);           
+           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);           
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);
@@ -171,7 +173,7 @@ else
        for b=1:N_Boot
            if rem(b,100)==1; fprintf("Bootstrapping %d\n", b); end
            [Z_ib,~]=GC_Boot(z);
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,Max_iter,Min_limit,N,J,P);
+           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);

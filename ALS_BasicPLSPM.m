@@ -1,4 +1,4 @@
-function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,itmax,ceps,N,J,P)
+function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
@@ -103,6 +103,14 @@ if (it== itmax) && (imp > ceps); Flag_Converge=false; end
 Path = zeros(P,P);      % path coefficients
 WT = zeros(J,P);       % outer weights
 LD = zeros(P,J);       % outer loadings
+
+for p=1:P
+    if ind_sign(1,p)>0
+        if z(:,ind_sign(1,p))'*Gamma(:,p)<0
+            Gamma(:,p)=-Gamma(:,p);
+        end
+    end
+end
 for p = 1:P
     bindex = B0(:,p);
     if ~isempty(bindex)
@@ -114,3 +122,4 @@ for p = 1:P
     WT(windex,p) = pinv(z_p'*z_p)*z_p'*Gamma(:,p);
     LD(p,windex) = Gamma(:,p)'*z_p;
 end
+
