@@ -9,7 +9,7 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,ind_sign,N_Boo
 %   W = a J by P matrix of weight parameters                              %
 %   B = a P by P matrix of path coefficients                              %
 %   modetype = a vector of length P indicating the mode of each latent    %
-%              variable (1 = mode A, 2 = mode B)                          %
+%              variable (1 = mode A, 0 = mode B)                          %
 %   scheme = an integer indicating the scheme for updating inner weights  % 
 %              (1 = centroid, 2 = factorial, 3 = path weighting)          %
 %   ind_sign = a vector of length P representing sign-fixing indicator of %
