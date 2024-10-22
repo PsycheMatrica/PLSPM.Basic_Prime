@@ -38,7 +38,7 @@ N_Boot=1000;
 Max_iter = 1000;
 Min_limit = 10^(-6);
 Flag_Parallel = false;
-modetype=ones(1,6); % 1 = mode A, 0 = mode B
+modetype=ones(1,6); % 1 = mode A, 2 = mode B
 scheme=3; %  1 = centroid, 2 = factorial, 3 = path weighting
 ind_sign = [1,4,7,9,12,13];
 [INI,TABLE,ETC]=BasicPLSPM(Data{:,:}, W0, B0, modetype,scheme,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel);

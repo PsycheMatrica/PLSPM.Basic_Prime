@@ -17,8 +17,8 @@ while it < itmax && imp > ceps
       for p = 1:P
           windex = W0(:,p);
           Jp=sum(windex,1);
-          alpha = modetype(p);
-          beta = 1 - alpha;
+          alpha = 2 - modetype(p);
+          beta =  1 - alpha;
 %           H = eye(P);               
 %           H(p,p) = 0;
 %           F1 = z - F*H*W';
