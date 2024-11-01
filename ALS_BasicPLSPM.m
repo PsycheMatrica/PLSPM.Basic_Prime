@@ -41,11 +41,11 @@ while it < itmax && imp > ceps
          corLV = corrcoef(Gamma);
          for p = 1:P
              bindex = B0(:,p);   % DV 
-             if ~isempty(bindex)
+             if sum(bindex,1)>0
                 B(bindex,p) = sign(corLV(bindex,p));  
              end
-             bindex = find(B0(p,:));   % IV 
-             if ~isempty(bindex)
+             bindex = B0(p,:);   % IV 
+             if sum(bindex,2)>0
                 B(bindex,p) = sign(corLV(p,bindex));
              end
          end
@@ -53,20 +53,20 @@ while it < itmax && imp > ceps
              corLV = corrcoef(Gamma);
              for p = 1:P
                  bindex = B0(:,p);   % DV 
-                 if ~isempty(bindex)
+                 if sum(bindex,1)>0
                      B(bindex,p) = corLV(bindex,p);  
                  end
              end 
              for p = 1:P
                  bindex = B0(p,:);   % IV 
-                 if ~isempty(bindex)
+                 if sum(bindex,2)>0
                     B(bindex,p) = corLV(p,bindex);
                  end
              end
       elseif scheme == 3     % path weighting scheme 
              for p = 1:P
                  bindex = B0(:,p);   % DV
-                 if ~isempty(bindex)
+                 if sum(bindex,1)>0
                     gp = Gamma(:,bindex);
                     B(bindex,p) = (gp'*gp)\gp'*Gamma(:,p);  
                  end
@@ -74,7 +74,7 @@ while it < itmax && imp > ceps
              corLV = corrcoef(Gamma);
              for p = 1:P
                  bindex = B0(p,:);   % IV
-                 if ~isempty(bindex)
+                 if sum(bindex,2)>0
                     B(bindex,p) = corLV(p,bindex);
                  end
               end
@@ -113,7 +113,7 @@ for p=1:P
 end
 for p = 1:P
     bindex = B0(:,p);
-    if ~isempty(bindex)
+    if sum(bindex,1)>0
        Gamma_p = Gamma(:,bindex);
        Path(bindex,p) = pinv(Gamma_p'*Gamma_p)*Gamma_p'*Gamma(:,p);
     end

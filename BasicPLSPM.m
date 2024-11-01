@@ -25,6 +25,8 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,ind_sign,N_Boo
 % Output arguments:                                                       %
 %   INI: Structure array containing goodness-of-fit values, R-squared     % 
 %        values, and matrices parameter estimates                         %
+%     .Converge = Logical value indicating whether the ALS algorithm      %
+%                 converges within the maximum number of iterations       %
 %     .iter = Number of iterations for the ALS algorithm                  %
 %     .W: a J by P matrix of weight estimates                             %
 %     .C: a P by J matrix of loading estimates                            %
@@ -94,47 +96,47 @@ for j = 1:P
     Gamma(:,j) = Gamma(:,j)/norm(Gamma(:,j));
 end
 
- if scheme == 1              %centroid scheme
-       corLV = corrcoef(Gamma);
-       for j = 1:P
-           bindex = find(B0(:,j));   % DV 
-          if ~isempty(bindex)
-             B(bindex,j) = sign(corLV(bindex,j));  
-          end
-       end 
-       for j = 1:P
-          bindex = find(B0(j,:));   % IV 
-          if ~isempty(bindex)
-             B(bindex,j) = sign(corLV(j,bindex));
-          end
-       end
- elseif scheme == 2         % factorial scheme
-       corLV = corrcoef(Gamma);
-       for j = 1:P
-           bindex = find(B0(:,j));   % DV 
-          if ~isempty(bindex)
-             B(bindex,j) = corLV(bindex,j);  
-          end
-       end 
-       for j = 1:P
-          bindex = find(B0(j,:));   % IV 
-         if ~isempty(bindex)
-             B(bindex,j) = corLV(j,bindex);
-          end
-        end
- elseif scheme == 3       % path weighting scheme
-       for j = 1:P
-           bindex = find(B0(:,j));   % DV
-           if ~isempty(bindex)
-              gj = Gamma(:,bindex);
-              B(bindex,j) = (gj'*gj)\gj'*Gamma(:,j);  
+if scheme == 1              %centroid scheme
+      corLV = corrcoef(Gamma);
+      for p = 1:P
+          bindex = B0(:,p);   % DV 
+         if sum(bindex,1)>0
+            B(bindex,p) = sign(corLV(bindex,p));  
+         end
+      end 
+      for p = 1:P
+         bindex = B0(p,:);   % IV 
+         if sum(bindex,2)>0
+            B(bindex,p) = sign(corLV(p,bindex));
+         end
+      end
+elseif scheme == 2         % factorial scheme
+      corLV = corrcoef(Gamma);
+      for p = 1:P
+          bindex = B0(:,p);   % DV 
+         if sum(bindex,1)>0
+            B(bindex,p) = corLV(bindex,p);  
+         end
+      end 
+      for p = 1:P
+         bindex = B0(p,:);   % IV 
+         if sum(bindex,2)>0
+            B(bindex,p) = corLV(p,bindex);
+         end
+      end
+elseif scheme == 3       % path weighting scheme
+       for p = 1:P
+           bindex = B0(:,p);   % DV
+           if sum(bindex,1)>0
+              gp = Gamma(:,bindex);
+              B(bindex,p) = (gp'*gp)\gp'*Gamma(:,p);  
            end
        end    
        corLV = corrcoef(Gamma);
-       for j = 1:P
-           bindex = find(B0(j,:));   % IV
-           if ~isempty(bindex)
-               B(bindex,j) = corLV(j,bindex);
+       for p = 1:P
+           bindex = B0(p,:);   % IV
+           if sum(bindex,2)>0
+               B(bindex,p) = corLV(p,bindex);
            end
        end
 end

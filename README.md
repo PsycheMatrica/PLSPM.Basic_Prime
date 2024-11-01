@@ -7,7 +7,7 @@ Heungsun Hwang and Gyeongcheol Cho
 - The **BasicPLSPM_Prime** package enables users to estimate and evaluate basic PLSPM models.
 
 ## Features:
-- Estimate GSCA model parameters and calculate their standard errors (SE) along with 95% confidence intervals (CI).
+- Estimate PLSPM model parameters and calculate their standard errors (SE) along with 95% confidence intervals (CI).
 - Enable parallel computing for bootstrap sampling.
 - Allow users to specify a sign-fixing indicator for each component.
 
