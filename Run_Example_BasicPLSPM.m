@@ -8,14 +8,14 @@
 %     (2024).                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % References                                                              %
-%     * Cho, G., Hwang, H. Generalized Structured Component Analysis      %
-%         Accommodating Convex Components: A Knowledge-Based Multivariate %
-%         Method with Interpretable Composite Indexes. Psychometrika 89,  %
-%         241–266 (2024). https://doi.org/10.1007/s11336-023-09944-3      %  
-%     * Hwang, H., Takane, Y. & Tenenhaus, A. An Alternative Estimation   %
-%         Procedure for Partial Least Squares Path Modeling.              %
-%         Behaviormetrika 42, 63–78 (2015).                               %
-%         https://doi.org/10.2333/bhmk.42.63                              % 
+%     * Cho, G., Hwang, H. (2024) Generalized Structured Component        %
+%         Analysis Accommodating Convex Components: A Knowledge-Based     %
+%         Multivariate Method with Interpretable Composite Indexes.       %
+%         Psychometrika 89, 241–266.                                      %  
+%         https://doi.org/10.1007/s11336-023-09944-3                      %
+%     * Hwang, H., Takane, Y. & Tenenhaus, A. (2015) An Alternative       %
+%         Estimation Procedure for Partial Least Squares Path Modeling.   %
+%         Behaviormetrika 42, 63–78. https://doi.org/10.2333/bhmk.42.63   %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 help BasicPLSPM()

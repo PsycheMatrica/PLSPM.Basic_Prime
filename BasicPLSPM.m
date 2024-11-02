@@ -64,93 +64,20 @@ function [INI,TABLE,ETC] = BasicPLSPM(z0, W0, B0, modetype,scheme,ind_sign,N_Boo
 
 P = size(W0,2);                    % num of LVs
 [N, J] = size(z0);              % num of cases
-z = zscore(z0)/sqrt(N-1);         % normalized data
 %% Initialization 
 W0=W0~=0; Nw=sum(sum(W0,1),2);
 C0=W0';   Nc=sum(sum(C0,1),2);
 B0=B0~=0; Nb=sum(sum(B0,1),2);
-W = double(W0);
-B = double(B0);
 ind_Bdep=sum(B0,1)>0; Py = sum(ind_Bdep,2);
-% Gamma = zeros(N,P);                     
-% for j = 1:P
-%     windex = find(W0(:,j));
-%     z_j = z(:,windex);
-%     [~, S V] = svd(z_j'*z_j);
-%     Gamma(:,j) = z_j*V(:,1)/sqrt(S(1,1));    % first PC scores
-% %     W(windex,j) = rand(length(windex),1);      % random starts
-% %     Gamma(:,j) = z_j*W(windex,j);
-% %     Gamma(:,j) = Gamma(:,j)/norm(Gamma(:,j));
-% end
 
-%vr = jcovcor(z0);
-%S = vr.cor;
-S=z'*z;
-%W = W0./99;
-W = W./repmat(sqrt(diag(W'*S*W))',J,1);    % same starts as in GSCA
-Gamma = zeros(N,P);                     
-for j = 1:P
-    windex = find(W0(:,j));
-    z_j = z(:,windex);
-    Gamma(:,j) = z_j*W(windex,j);
-    Gamma(:,j) = Gamma(:,j)/norm(Gamma(:,j));
-end
 
-if scheme == 1              %centroid scheme
-      corLV = corrcoef(Gamma);
-      for p = 1:P
-          bindex = B0(:,p);   % DV 
-         if sum(bindex,1)>0
-            B(bindex,p) = sign(corLV(bindex,p));  
-         end
-      end 
-      for p = 1:P
-         bindex = B0(p,:);   % IV 
-         if sum(bindex,2)>0
-            B(bindex,p) = sign(corLV(p,bindex));
-         end
-      end
-elseif scheme == 2         % factorial scheme
-      corLV = corrcoef(Gamma);
-      for p = 1:P
-          bindex = B0(:,p);   % DV 
-         if sum(bindex,1)>0
-            B(bindex,p) = corLV(bindex,p);  
-         end
-      end 
-      for p = 1:P
-         bindex = B0(p,:);   % IV 
-         if sum(bindex,2)>0
-            B(bindex,p) = corLV(p,bindex);
-         end
-      end
-elseif scheme == 3       % path weighting scheme
-       for p = 1:P
-           bindex = B0(:,p);   % DV
-           if sum(bindex,1)>0
-              gp = Gamma(:,bindex);
-              B(bindex,p) = (gp'*gp)\gp'*Gamma(:,p);  
-           end
-       end    
-       corLV = corrcoef(Gamma);
-       for p = 1:P
-           bindex = B0(p,:);   % IV
-           if sum(bindex,2)>0
-               B(bindex,p) = corLV(p,bindex);
-           end
-       end
-end
-%LD = LD';
-%WT;
-%Path;
-%B;
-[est_W,est_C,est_B,it,Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
+[est_W,est_C,est_B,it,Converge, est_Gamma] = ALS_BasicPLSPM(z0,W0,B0,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
 INI.iter = it;
 INI.Converge=Converge;
 INI.W = est_W;
 INI.C = est_C;
 INI.B = est_B;
-INI.CVscore = Gamma*sqrt(N);
+INI.CVscore = est_Gamma*sqrt(N);
 
 if N_Boot<100
    TABLE.W=[est_W(W0),NaN(Nw,5)];
@@ -165,8 +92,8 @@ else
    B_Boot=zeros(Nb,N_Boot);
    if Flag_Parallel
        parfor b=1:N_Boot
-           [Z_ib,~]=GC_Boot(z);
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);           
+           Z_ib = GC_Boot(z0);
+           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);           
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);
@@ -174,8 +101,8 @@ else
    else
        for b=1:N_Boot
            if rem(b,100)==1; fprintf("Bootstrapping %d\n", b); end
-           [Z_ib,~]=GC_Boot(z);
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
+           Z_ib = GC_Boot(z0);
+           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,ind_sign,Max_iter,Min_limit,N,J,P);
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);
@@ -199,11 +126,8 @@ function Table=para_stat(est_mt,boot_mt,CI_mp)
    SE=std(boot_mt,0,2);
    Table=[est_mt,SE,boot_mt(:,CI_mp(1,1)),boot_mt(:,CI_mp(1,4))]; 
 end
-function [in_sample,out_sample,index,N_oob]=GC_Boot(Data)
+function in_sample=GC_Boot(Data)
    N=size(Data,1); 
    index=ceil(N*rand(N,1));
    in_sample=Data(index,:); 
-   index_oob=(1:N)'; index_oob(index)=[];
-   out_sample=Data(index_oob,:);
-   N_oob=length(index_oob);
 end

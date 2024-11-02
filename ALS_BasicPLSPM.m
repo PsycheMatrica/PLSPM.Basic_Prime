@@ -1,10 +1,70 @@
-function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z,Gamma,W0,B0,W,B,modetype,scheme,ind_sign,itmax,ceps,N,J,P)
+function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z0,W0,B0,modetype,scheme,ind_sign,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
 % Author: Heungsun Hwang & Gyeongcheol Cho                                % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% ALS algorithm
+
+z = zscore(z0)/sqrt(N-1);         % normalized data
+W = double(W0);
+B = double(B0);
+S = z'*z;
+W = W./repmat(sqrt(diag(W'*S*W))',J,1);    % same starts as in GSCA
+Gamma = zeros(N,P);                     
+for j = 1:P
+    windex = find(W0(:,j));
+    z_j = z(:,windex);
+    Gamma(:,j) = z_j*W(windex,j);
+    Gamma(:,j) = Gamma(:,j)/norm(Gamma(:,j));
+end
+
+if scheme == 1              %centroid scheme
+      corLV = corrcoef(Gamma);
+      for p = 1:P
+          bindex = B0(:,p);   % DV 
+         if sum(bindex,1)>0
+            B(bindex,p) = sign(corLV(bindex,p));  
+         end
+      end 
+      for p = 1:P
+         bindex = B0(p,:);   % IV 
+         if sum(bindex,2)>0
+            B(bindex,p) = sign(corLV(p,bindex));
+         end
+      end
+elseif scheme == 2         % factorial scheme
+      corLV = corrcoef(Gamma);
+      for p = 1:P
+          bindex = B0(:,p);   % DV 
+         if sum(bindex,1)>0
+            B(bindex,p) = corLV(bindex,p);  
+         end
+      end 
+      for p = 1:P
+         bindex = B0(p,:);   % IV 
+         if sum(bindex,2)>0
+            B(bindex,p) = corLV(p,bindex);
+         end
+      end
+elseif scheme == 3       % path weighting scheme
+       for p = 1:P
+           bindex = B0(:,p);   % DV
+           if sum(bindex,1)>0
+              gp = Gamma(:,bindex);
+              B(bindex,p) = (gp'*gp)\gp'*Gamma(:,p);  
+           end
+       end    
+       corLV = corrcoef(Gamma);
+       for p = 1:P
+           bindex = B0(p,:);   % IV
+           if sum(bindex,2)>0
+               B(bindex,p) = corLV(p,bindex);
+           end
+       end
+end
+
+
+%% ALS algorithm
 it = 0;                   % iteration counter
 imp = 100000;             % initial improvement
 %f0 = 1000000;
@@ -122,4 +182,3 @@ for p = 1:P
     WT(windex,p) = pinv(z_p'*z_p)*z_p'*Gamma(:,p);
     LD(p,windex) = Gamma(:,p)'*z_p;
 end
-
