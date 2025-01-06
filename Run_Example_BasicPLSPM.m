@@ -1,9 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Illustration for BasicPLSPM Prime package                               %
+% Illustration for PLSPM.Basic_Prime package                              %
 %   Author: Heungsun Hwang & Gyeongcheol Cho                              %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Description:                                                            %
-%   - This code aims to illustrate how to use BasicPLSPM Prime package.   %
+%   - This code aims to illustrate how to use PLSPM.Basic_Prime package.  %
 %   - The dataset is a replica of the ACSI data used in Cho & Hwang       %
 %     (2024).                                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

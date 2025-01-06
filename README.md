@@ -1,10 +1,10 @@
-# BasicPLSPM_Prime
+# PLSPM.Basic_Prime
 
 ### Author:
 Heungsun Hwang and Gyeongcheol Cho
 
 ## Description:
-- The **BasicPLSPM_Prime** package enables users to estimate and evaluate basic PLSPM models.
+- The **PLSPM.Basic_Prime** package enables users to estimate and evaluate basic PLSPM models.
 
 ## Features:
 - Estimate PLSPM model parameters and calculate their standard errors (SE) along with 95% confidence intervals (CI).
@@ -15,11 +15,11 @@ Heungsun Hwang and Gyeongcheol Cho
 To use this package in MATLAB:
 1. Clone or download the repository:
    ```bash
-   git clone https://github.com/GyeongcheolCho/BasicPLSPM_Prime.git
+   git clone https://github.com/PsycheMatrica/PLSPM.Basic_Prime.git
    ```
 2. Add the package to your MATLAB path:
    ```matlab
-    addpath(genpath('BasicPLSPM_Prime'))
+    addpath(genpath('PLSPM.Basic_Prime'))
    ```
 
 ## Usage:
@@ -30,8 +30,8 @@ To use this package in MATLAB:
 - Likely compatible with earlier MATLAB versions.
 
 ### Citation (APA):
-- If you use **BasicPLSPM_Prime** in your research or publications, please cite it in APA format as follows:
+- If you use **PLSPM.Basic_Prime** in your research or publications, please cite it in APA format as follows:
 
 ```plaintext
-Hwang, H. & Cho, G. (2024). BasicPLSPM_Prime: A package for basic partial least squares path modeling [Computer software]. GitHub. https://github.com/GyeongcheolCho/BasicPLSPM_Prime
+Hwang, H. & Cho, G. (2024). PLSPM.Basic_Prime: A package for basic partial least squares path modeling [Computer software]. GitHub. https://github.com/PsycheMatrica/PLSPM.Basic_Prime
 ```
