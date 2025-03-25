@@ -40,8 +40,10 @@ Min_limit = 10^(-6);
 Flag_Parallel = false;
 modetype=ones(1,6); % 1 = mode A, 2 = mode B
 scheme=3; %  1 = centroid, 2 = factorial, 3 = path weighting
+correct_type=ones(1,6); % 
+Opt_Missing=0; % 0 = None, 1 = List-wise deletion, 2 = mean imputation, 3 = pairwise correlation
 ind_sign = [1,4,7,9,12,13];
-[INI,TABLE,ETC]=BasicPLSPM(Data{:,:}, W0, B0, modetype,scheme,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel);
+[INI,TABLE,ETC]=BasicPLSPM(Data{:,:}, W0, B0, modetype,scheme,correct_type,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel,Opt_Missing);
 INI
 INI.Converge
 INI.iter

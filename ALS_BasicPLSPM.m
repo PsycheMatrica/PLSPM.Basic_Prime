@@ -1,19 +1,19 @@
-function [WT,LD,Path,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(z0,W0,B0,modetype,scheme,ind_sign,itmax,ceps,N,J,P)
+function [W,C,B,Cov_F,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(Z0,W0,B0,modetype,scheme,correct_type,ind_sign,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
 % Author: Heungsun Hwang & Gyeongcheol Cho                                % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-z = zscore(z0)/sqrt(N-1);         % normalized data
+Z = zscore(Z0)/sqrt(N-1);         % normalized data
 W = double(W0);
 B = double(B0);
-S = z'*z;
+S = Z'*Z;
 W = W./repmat(sqrt(diag(W'*S*W))',J,1);    % same starts as in GSCA
 Gamma = zeros(N,P);                     
 for j = 1:P
     windex = find(W0(:,j));
-    z_j = z(:,windex);
+    z_j = Z(:,windex);
     Gamma(:,j) = z_j*W(windex,j);
     Gamma(:,j) = Gamma(:,j)/norm(Gamma(:,j));
 end
@@ -85,15 +85,15 @@ while it < itmax && imp > ceps
 %           y1 = reshape(F1,N*J,1);
 %           X1 = kron(eye(J),F(:,p));
 %           X1 = X1(:,windex);
-          y1 = reshape(z(:,windex),N*Jp,1);
+          y1 = reshape(Z(:,windex),N*Jp,1);
           X1 = kron(eye(Jp),F(:,p));
           XX1 = alpha*(X1'*X1);
           Xy1 = alpha*X1'*y1;
-          XX2 = beta*(z(:,windex)'*z(:,windex));
-          Xy2 = beta*z(:,windex)'*F(:,p);
+          XX2 = beta*(Z(:,windex)'*Z(:,windex));
+          Xy2 = beta*Z(:,windex)'*F(:,p);
           w_p = (XX1 + XX2)\(Xy1 + Xy2);
           W(windex,p) = w_p;
-          Gamma(:,p) = z(:,windex)*w_p; 
+          Gamma(:,p) = Z(:,windex)*w_p; 
           Gamma(:,p) = Gamma(:,p)/norm(Gamma(:,p));
       end      
       %% update B 
@@ -160,13 +160,13 @@ end
 Flag_Converge=true;
 if (it== itmax) && (imp > ceps); Flag_Converge=false; end
 %% Estimation of loadings, weights, and paths 
-Path = zeros(P,P);      % path coefficients
-WT = zeros(J,P);       % outer weights
-LD = zeros(P,J);       % outer loadings
+B = zeros(P,P);      % path coefficients
+W = zeros(J,P);       % outer weights
+C = zeros(P,J);       % outer loadings
 
 for p=1:P
     if ind_sign(1,p)>0
-        if z(:,ind_sign(1,p))'*Gamma(:,p)<0
+        if Z(:,ind_sign(1,p))'*Gamma(:,p)<0
             Gamma(:,p)=-Gamma(:,p);
         end
     end
@@ -175,10 +175,11 @@ for p = 1:P
     bindex = B0(:,p);
     if sum(bindex,1)>0
        Gamma_p = Gamma(:,bindex);
-       Path(bindex,p) = pinv(Gamma_p'*Gamma_p)*Gamma_p'*Gamma(:,p);
+       B(bindex,p) = pinv(Gamma_p'*Gamma_p)*Gamma_p'*Gamma(:,p);
     end
     windex = W0(:,p);
-    z_p = z(:,windex);
-    WT(windex,p) = pinv(z_p'*z_p)*z_p'*Gamma(:,p);
-    LD(p,windex) = Gamma(:,p)'*z_p;
+    z_p = Z(:,windex);
+    W(windex,p) = pinv(z_p'*z_p)*z_p'*Gamma(:,p);
+    C(p,windex) = Gamma(:,p)'*z_p;
 end
+[C, B, Cov_F] = Dijktra_correction(Z, W0, B0, W, C, Gamma, correct_type);
