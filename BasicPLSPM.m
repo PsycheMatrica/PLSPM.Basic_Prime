@@ -2,21 +2,21 @@ function [INI,TABLE,ETC] = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,i
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BasicPLSPM() - MATLAB function to perform a basic version of Partial    %
 %               Least Sqaures Path Modeling  (PLSPM).                     %
-% Author: Heungsun Hwang & Gyeongcheol Cho                                %
+% Author: Gyeongcheol Cho & Heungsun Hwang                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Input arguments:                                                        %
 %   Z0 = an N by J matrix of scores for N individuals on J indicators     %
 %   W = a J by P matrix of weight parameters                              %
 %   B = a P by P matrix of path coefficients                              %
-%   modetype = a vector of length P indicating the mode of each constuct  %
-%                (1 = mode A, 2 = mode B)                                 %
+%   modetype = a row vector of length P indicating the mode of each       %
+%              constuct  (1 = mode A, 2 = mode B)                         %
 %   scheme = an integer indicating the scheme for updating inner weights  % 
 %              (1 = centroid, 2 = factorial, 3 = path weighting)          %
-%   correct_type = a vector of length P indicating whether Dijkstra's     %
+%   correct_type = a row vector of length P indicating whether Dijkstra's %
 %                  correction is applied to each construct                %
 %                  (0 = not applied, 1 = applied)                         %
-%   ind_sign = a vector of length P representing sign-fixing indicator of %
-%              each latent variable                                       %
+%   ind_sign = a row vector of length P representing sign-fixing indicator%
+%              of each construct                                          %
 %   N_Boot = Integer representing the number of bootstrap samples for     %
 %            calculating standard errors (SE) and 95% confidence          %
 %            intervals (CI)                                               %
@@ -40,6 +40,7 @@ function [INI,TABLE,ETC] = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,i
 %     .C: a P by J matrix of loading estimates                            %
 %     .B: a P by P matrix of path coefficient estimates                   %
 %     .CVscore: an N by P matrix of component scores                      % 
+%     .Rho: 1 × P vector of Dijktra's construct reliabilities             % 
 %  TABLE: Structure array containing tables of parameter estimates, their %
 %         SEs, 95% CIs,and other statistics                               %
 %     .W: Table for weight estimates                                      %
@@ -110,13 +111,14 @@ elseif Opt_Missing==3
     idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
     Z=idt*Cov_Z_sq*sqrt(N);
 end
-[est_W,est_C,est_B,it,Converge, est_Gamma] = ALS_BasicPLSPM(Z,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
+[est_W,est_C,est_B,it,Converge, est_Gamma,est_rho] = ALS_BasicPLSPM(Z,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
 INI.iter = it;
 INI.Converge=Converge;
 INI.W = est_W;
 INI.C = est_C;
 INI.B = est_B;
 INI.CVscore = est_Gamma*sqrt(N);
+INI.Rho = est_rho;
 
 if N_Boot<100
    TABLE.W=[est_W(W0),NaN(Nw,5)];
@@ -146,7 +148,7 @@ else
                idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
                Z_ib=idt*Cov_Z_ib_sq*sqrt(N);
            end     
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);           
+           [W_b,C_b,B_b,~,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);           
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);
@@ -169,7 +171,7 @@ else
                idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
                Z_ib=idt*Cov_Z_ib_sq*sqrt(N);
            end    
-           [W_b,C_b,B_b,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
+           [W_b,C_b,B_b,~,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);

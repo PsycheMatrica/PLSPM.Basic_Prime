@@ -1,8 +1,8 @@
-function [W,C,B,Cov_F,it,Flag_Converge, Gamma] = ALS_BasicPLSPM(Z0,W0,B0,modetype,scheme,correct_type,ind_sign,itmax,ceps,N,J,P)
+function [W,C,B,Cov_F,it,Flag_Converge, Gamma,Rho_A] = ALS_BasicPLSPM(Z0,W0,B0,modetype,scheme,correct_type,ind_sign,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
-% Author: Heungsun Hwang & Gyeongcheol Cho                                % 
+% Author: Gyeongcheol Cho & Heungsun Hwang &                              % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Z = zscore(Z0)/sqrt(N-1);         % normalized data
@@ -182,4 +182,9 @@ for p = 1:P
     W(windex,p) = pinv(z_p'*z_p)*z_p'*Gamma(:,p);
     C(p,windex) = Gamma(:,p)'*z_p;
 end
-[C, B, Cov_F] = Dijktra_correction(Z, W0, B0, W, C, Gamma, correct_type);
+Rho_A=ones(1,P);
+if sum(correct_type,2)>0
+    [~,C, B, Cov_F,Rho_A] = Dijktra_correction(Z, W0, B0, W, C, Gamma, correct_type,[],[]);
+else
+    Cov_F = Gamma'*Gamma;
+end
