@@ -1,4 +1,4 @@
-function [INI,TABLE,ETC] = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel,Opt_Missing)
+function Results = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel,Opt_Missing)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % BasicPLSPM() - MATLAB function to perform a basic version of Partial    %
 %               Least Sqaures Path Modeling  (PLSPM).                     %
@@ -31,7 +31,11 @@ function [INI,TABLE,ETC] = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,i
 %               = 3 for pairwise correlation                              %
 %       * Missing values in Z0 must be entered as NaN                     %
 % Output arguments:                                                       %
-%   INI: Structure array containing goodness-of-fit values, R-squared     % 
+%   Results: Structure array containing (1) results from the original     %
+%       sample (INI); (2) summary tables with standard errors and         %
+%       confidence intervals (TABLE); and (3) bootstrap estimates for     %
+%       various parameter sets (ETC).                                     %    
+%   .INI: Structure array containing goodness-of-fit values, R-squared    % 
 %        values, and matrices parameter estimates                         %
 %     .Converge = Logical value indicating whether the ALS algorithm      %
 %                 converges within the maximum number of iterations       %
@@ -41,12 +45,12 @@ function [INI,TABLE,ETC] = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,i
 %     .B: a P by P matrix of path coefficient estimates                   %
 %     .CVscore: an N by P matrix of component scores                      % 
 %     .Rho: 1 × P vector of Dijktra's construct reliabilities             % 
-%  TABLE: Structure array containing tables of parameter estimates, their %
+%  .TABLE: Structure array containing tables of parameter estimates, their%
 %         SEs, 95% CIs,and other statistics                               %
 %     .W: Table for weight estimates                                      %
 %     .C: Table for loading estimates                                     %
 %     .B: Table for path coefficients estimates                           %
-%  ETC: Structure array including bootstrapped parameter estmates         %
+%  .ETC: Structure array including bootstrapped parameter estmates        %
 %     .W_Boot: Matrix of bootstrapped weight estimates                    %
 %     .C_Boot: Matrix of bootstrapped loading estimates                   %
 %     .B_Boot: Matrix of bootstrapped path coefficient estimates          %
@@ -189,6 +193,9 @@ else
    ETC.C_Boot=C_Boot;
    ETC.B_Boot=B_Boot;    
 end
+Results.INI=INI;
+Results.TABLE=TABLE;
+Results.ETC=ETC;
 end
 function Table=para_stat(est_mt,boot_mt,CI_mp)
    boot_mt=sort(boot_mt,2);
