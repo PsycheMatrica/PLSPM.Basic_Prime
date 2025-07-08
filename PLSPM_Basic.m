@@ -1,6 +1,6 @@
-function Results = BasicPLSPM(Z0, W0, B0, modetype,scheme,correct_type,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel,Opt_Missing)
+function Results = PLSPM_Basic(Z0, W0, B0, modetype,scheme,correct_type,ind_sign,N_Boot,Max_iter,Min_limit,Flag_Parallel,Opt_Missing)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% BasicPLSPM() - MATLAB function to perform a basic version of Partial    %
+% PLSPM_Basic() - MATLAB function to perform a basic version of Partial    %
 %               Least Sqaures Path Modeling  (PLSPM).                     %
 % Author: Gyeongcheol Cho & Heungsun Hwang                                %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -115,7 +115,7 @@ elseif Opt_Missing==3
     idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
     Z=idt*Cov_Z_sq*sqrt(N);
 end
-[est_W,est_C,est_B,it,Converge, est_Gamma,est_rho] = ALS_BasicPLSPM(Z,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
+[est_W,est_C,est_B,it,Converge, est_Gamma,est_rho] = ALS_PLSPM_Basic(Z,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
 INI.iter = it;
 INI.Converge=Converge;
 INI.W = est_W;
@@ -152,7 +152,7 @@ else
                idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
                Z_ib=idt*Cov_Z_ib_sq*sqrt(N);
            end     
-           [W_b,C_b,B_b,~,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);           
+           [W_b,C_b,B_b,~,~,~]=ALS_PLSPM_Basic(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);           
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);
@@ -175,7 +175,7 @@ else
                idt=randn(N,J); idt=idt-mean(idt); DD=(idt'*idt); [v,x]=eig(DD); idt=idt*(v*inv(x).^(1/2)*v');
                Z_ib=idt*Cov_Z_ib_sq*sqrt(N);
            end    
-           [W_b,C_b,B_b,~,~,~]=ALS_BasicPLSPM(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
+           [W_b,C_b,B_b,~,~,~]=ALS_PLSPM_Basic(Z_ib,W0,B0,modetype,scheme,correct_type,ind_sign,Max_iter,Min_limit,N,J,P);
            W_Boot(:,b)=W_b(W0);
            C_Boot(:,b)=C_b(C0);
            B_Boot(:,b)=B_b(B0);

@@ -1,6 +1,6 @@
-function [W,C,B,Cov_F,it,Flag_Converge, Gamma,Rho_A] = ALS_BasicPLSPM(Z0,W0,B0,modetype,scheme,correct_type,ind_sign,itmax,ceps,N,J,P)
+function [W,C,B,Cov_F,it,Flag_Converge, Gamma,Rho_A] = ALS_PLSPM_Basic(Z0,W0,B0,modetype,scheme,correct_type,ind_sign,itmax,ceps,N,J,P)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ALS_Basic() - MATLAB function to implement the basic ALS algorithm for  %
+% ALS_PLSPM_Basic() - MATLAB function to implement the basic ALS algorithm for  %
 %               Partial Least Squares Path Modeling (PLSPM).              %
 % Author: Gyeongcheol Cho & Heungsun Hwang &                              % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
